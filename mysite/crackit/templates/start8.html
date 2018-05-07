@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Paytone+One|Yrsa" rel="stylesheet">
+     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+     <link href="https://fonts.googleapis.com/css?family=Coming+Soon|Covered+By+Your+Grace|Delius|The+Girl+Next+Door" rel="stylesheet">
+      {% load staticfiles %}
+
+<title>JavaScript Snake game</title> 
+<link href="https://fonts.googleapis.com/css?family=Caveat+Brush" rel="stylesheet">    
+<style>
+     body{
+        background: #FFDD23;
+    }
+     
+       
+     .img-valign {
+  vertical-align: middle;
+  margin-bottom: 0.70em;
+
+} 
+
+    .not-active {
+        pointer-events: none;
+        cursor: default;
+    }
+
+    canvas {background:white;  }
+
+    #lblLives{
+        font-size: 40px;
+        font-weight: bold;
+        font-family: 'Caveat Brush', cursive;
+        text-shadow: 2px 2px 4px white;
+    }
+    .eggs{
+        display:inline-block;
+    }
+    #level{
+       font-size: 40px;
+        font-weight: bold;
+        font-family: 'Caveat Brush', cursive;
+        text-shadow: 2px 2px 4px white; 
+    }
+    #egg { width: 40px; height: 60px; background: white; display:inline-block;
+    font-size:40px;margin-left:20px; line-height:60px; color:black;border-radius: 50%; text-align:center; }
+	
+	#lnknext {cursor : pointer ;}
+</style>
+
+<script>
+
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+var canvas;
+var ctx;
+
+var head;
+var ball;
+
+var dots;
+var egg_x;
+var egg_y;
+
+var egg_x1;
+var egg_y1;
+
+var egg_x2;
+var egg_y2;
+var n1 = 1;
+var n2 = 8;
+var n3 = 9;
+var flag = false;
+
+var leftDirection = false;
+var rightDirection = true;
+var upDirection = false;
+var downDirection = false;
+var inGame = true;    
+var hintBtnClickCount = 0;
+
+const DOT_SIZE = 10;
+const ALL_DOTS = 900;
+const MAX_RAND = 50;
+const DELAY = 140;
+const C_HEIGHT = 500;
+const C_WIDTH = 500;    
+
+const LEFT_KEY = 37;
+const RIGHT_KEY = 39;
+const UP_KEY = 38;
+const DOWN_KEY = 40;
+
+var x = new Array(ALL_DOTS);
+var y = new Array(ALL_DOTS);   
+var img = new Image();
+img.src='https://fontmeme.com/permalink/180409/6d68ba92d81d523cc9b38fe54b4cd8e1.png';
+var flag = false;
+function init() {
+    document.getElementById("lblLives").innerHTML = getUrlParameter("lives");
+    hintBtnClickCount = getUrlParameter("hintBtnClickCount");
+    if(hintBtnClickCount == 2){
+      document.getElementById('lnkHint').disabled = true;
+      document.getElementById('lnkHint').style.cursor = 'default';
+    }
+
+    canvas = document.getElementById('myCanvas');
+    ctx = canvas.getContext('2d');
+
+    loadImages();
+    createSnake();
+    placeEgg();
+    setTimeout("gameCycle()", DELAY);
+} 
+
+      
+function drawEgg(egg_x,egg_y,n){
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      var context1 = canvas.getContext('2d');
+      var centerX = 0;
+      var centerY = 0;
+      var radius = 10;
+
+      // save state
+      context.save();
+
+      // translate context
+      context.translate(egg_x,egg_y);
+
+      // scale context horizontally
+      context.scale(2 , 3);
+
+      // draw circle which will be stretched into an oval
+      context.beginPath();
+      context.arc(centerX,centerY, radius, 0, 3 * Math.PI, false);
+
+      // restore to original state
+      context.restore();
+      context.fillStyle = 'white';
+      context.fill();
+      context.lineWidth = 1;
+      context.font = "20px Roman";
+      context.strokeStyle = 'black';
+      context.strokeText(n,egg_x,egg_y)
+      context.stroke(); 
+    
+    
+}
+function loadImages() {
+    head = new Image();
+    head.src = 'https://lh3.googleusercontent.com/MB7MBAjI-0xjtBz3cdNs_6E9ogWrB_0sjhAlieV6WKgccGRukWpeNo8TOOehn9Vgx4fOG6r_kIRehzJnPRQRMsOO02Tte_3_BcY8_3X3UcZRaDTv6BfrTdC3Z9LqqRqlWMXjKGgbqw=s13-p-k';
+    
+    ball = new Image();
+    ball.src = 'https://lh3.googleusercontent.com/MB7MBAjI-0xjtBz3cdNs_6E9ogWrB_0sjhAlieV6WKgccGRukWpeNo8TOOehn9Vgx4fOG6r_kIRehzJnPRQRMsOO02Tte_3_BcY8_3X3UcZRaDTv6BfrTdC3Z9LqqRqlWMXjKGgbqw=s13-p-k';
+    
+}
+
+function createSnake() {
+
+    dots = 4;
+    for (var z = 0; z < dots; z++) {
+        x[z] = 50 - z * 10;
+        y[z] = 50;
+    }
+}
+function doDrawing() {
+    
+    ctx.clearRect(0, 0, C_WIDTH, C_HEIGHT);
+    
+    if (inGame) {
+
+        drawEgg(egg_x,egg_y,{% block n1 %} {% for c in n1%} {{c}}{% endfor %}{% endblock %});
+        drawEgg(egg_x1,egg_y1,{% block result %} {% for c in result%} {{c}}{% endfor %}{% endblock %});
+        drawEgg(egg_x2,egg_y2,{% block n2 %} {% for c in n2%} {{c}}{% endfor %}{% endblock %});
+        drawEgg(egg_x3,egg_y3,{% block n3 %} {% for c in n3%} {{c}}{% endfor %}{% endblock %});
+        drawEgg(egg_x4,egg_y4,{% block n4 %} {% for c in n4%} {{c}}{% endfor %}{% endblock %});
+
+        for (var z = 0; z < dots; z++) {
+            if (z == 0) {
+                ctx.drawImage(head, x[z], y[z]);
+            } else {
+                ctx.drawImage(ball, x[z], y[z]);
+            }
+        }    
+    }else if(flag){
+      
+       //document.getElementById("lnknext").disabled = false;
+      
+       var img1 = new Image();
+       img1.src='https://fontmeme.com/permalink/180424/19facf01defc3ebc6ebf09c88858f9f7.png';
+         if (img1.complete) {
+      ctx.drawImage(img1, 150, 200);
+         } else {
+            img1.onload = function () {
+          ctx.drawImage(img1, 150, 200);    
+          };
+  }
+       //ctx.drawImage(img1, 190, 250);
+       
+       document.getElementById("lnknext").classList.remove("not-active");
+       //inGame = true;
+       //flag = false;
+    }
+     else {
+          gameOver();
+          var div = document.createElement("div");
+          div.innerHTML = {% block result1 %} {% for c in result%} {{c}}{% endfor %}{% endblock %};
+          div.id="egg";
+          document.getElementById('divEggs').appendChild(div);
+    }        
+}
+
+function lnkNextClick(){
+  flag=false;
+  inGame=true;
+  var lives = document.getElementById("lblLives").innerHTML;
+  window.location.replace("http://crackit.pythonanywhere.com/crackit/level10?lives="+lives+"&hintBtnClickCount=" + hintBtnClickCount);
+}
+
+function gameOver() {
+   
+    ctx.drawImage(img, 150, 200);
+}
+
+function checkEgg() {
+
+    if ((x[0] == egg_x2) && (y[0] == egg_y2)) {
+        locateEgg();
+    }
+   
+}
+
+function move() {
+
+    for (var z = dots; z > 0; z--) {
+    
+        x[z] = x[(z - 1)];
+        y[z] = y[(z - 1)];
+    }
+
+    if (leftDirection) {
+    
+        x[0] -= DOT_SIZE;
+    }
+
+    if (rightDirection) {
+    
+        x[0] += DOT_SIZE;
+    }
+
+    if (upDirection) {
+    
+        y[0] -= DOT_SIZE;
+    }
+
+    if (downDirection) {
+    
+        y[0] += DOT_SIZE;
+    }
+}    
+
+function checkCollision() {
+
+    for (var z = dots; z > 0; z--) {
+
+        if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) {
+            inGame = false;
+        }
+    }
+
+    if (y[0] >= C_HEIGHT) {
+    
+       resetOriginalPosition();
+    }
+
+    if (y[0] < 0) {
+    
+      resetOriginalPosition();
+    }
+
+    if (x[0] >= C_WIDTH) {
+    
+      resetOriginalPosition();
+    }
+
+    if (x[0] < 0) {
+    
+      resetOriginalPosition();
+    }
+ 
+    if (((x[0] >= egg_x - 20) && (x[0] <= egg_x + 10)) &&
+           ((y[0] >= egg_y - 30) && (y[0] <= egg_y + 20))){
+      resetOriginalPosition();
+    }
+
+    if (((x[0] >= egg_x1 - 20) && (x[0] <= egg_x1 + 10)) &&
+           ((y[0] >= egg_y1 - 30) && (y[0] <= egg_y1 + 20))){
+        inGame=false;
+        flag= true;
+    }
+
+    if (((x[0] >= egg_x2 - 20) && (x[0] <= egg_x2 + 10)) &&
+           ((y[0] >= egg_y2 - 30) && (y[0] <= egg_y2 + 20))){
+       resetOriginalPosition();
+    }
+    if (((x[0] >= egg_x3 - 20) && (x[0] <= egg_x3 + 10)) &&
+           ((y[0] >= egg_y3 - 30) && (y[0] <= egg_y3 + 20))){
+       resetOriginalPosition();
+    }
+    if (((x[0] >= egg_x4 - 20) && (x[0] <= egg_x4 + 10)) &&
+           ((y[0] >= egg_y4 - 30) && (y[0] <= egg_y4 + 20))){
+       resetOriginalPosition();
+    }
+}
+
+function resetOriginalPosition(){
+        createSnake();
+        updateLives();
+        rightDirection=true;
+        leftDirection=false;
+        upDirection=false;
+        downDirection=false;
+}
+
+function updateLives(){
+  var spanLives = document.getElementById('lblLives');
+  spanLives.innerHTML = spanLives.innerText - 1;
+  
+  if(spanLives.innerText == 0){
+    inGame = false;
+  }
+}
+
+
+function placeEgg() {
+ flagX = true;
+	var eggValuesX = [];
+	while(flagX){
+	 var temp = Math.floor((Math.random()*450)+25)
+	 //window.alert(temp);
+	if(eggValuesX.length<5){
+	 if( !(eggValuesX.includes(temp))||(eggValuesX.includes(temp-1))||(eggValuesX.includes(temp-2))||
+	 (eggValuesX.includes(temp-3))||(eggValuesX.includes(temp-4))||(eggValuesX.includes(temp-5)) ||
+	 (eggValuesX.includes(temp-6))||(eggValuesX.includes(temp-7))||
+	 (eggValuesX.includes(temp-8))||(eggValuesX.includes(temp-9))||(eggValuesX.includes(temp-10)) ||
+	 (eggValuesX.includes(temp+1))||(eggValuesX.includes(temp+2))||
+	 (eggValuesX.includes(temp+3))||(eggValuesX.includes(temp+4))||(eggValuesX.includes(temp+5)) ||
+	 (eggValuesX.includes(temp+6))||(eggValuesX.includes(temp+7))||
+	 (eggValuesX.includes(temp+8))||(eggValuesX.includes(temp+9))||(eggValuesX.includes(temp+10)) ||
+	 (eggValuesX.includes(temp-11))||(eggValuesX.includes(temp-12))||
+	 (eggValuesX.includes(temp-13))||(eggValuesX.includes(temp-14))||(eggValuesX.includes(temp-15)) ||
+	 (eggValuesX.includes(temp-16))||(eggValuesX.includes(temp-17))||
+	 (eggValuesX.includes(temp-18))||(eggValuesX.includes(temp-19))||(eggValuesX.includes(temp-20)) ||
+	 (eggValuesX.includes(temp+11))||(eggValuesX.includes(temp+12))||
+	 (eggValuesX.includes(temp+13))||(eggValuesX.includes(temp+14))||(eggValuesX.includes(temp+15)) ||
+	 (eggValuesX.includes(temp+16))||(eggValuesX.includes(temp+17))||
+	 (eggValuesX.includes(temp+18))||(eggValuesX.includes(temp+19))||(eggValuesX.includes(temp+20))){
+	 eggValuesX.push(temp);	
+	 }
+	 else{
+	 flagX= true;
+	 }
+	}
+	else{
+	flagX = false;
+	}
+	}
+	
+	
+	flagY = true;
+	var eggValuesY = [];
+	while(flagY){
+	 var temp = Math.floor((Math.random()*430)+35)
+	 //window.alert(temp);
+	if(eggValuesY.length<5){
+	 		 if( !(eggValuesY.includes(temp))||(eggValuesY.includes(temp-1))||(eggValuesY.includes(temp-2))||
+	 (eggValuesY.includes(temp-3))||(eggValuesY.includes(temp-4))||(eggValuesY.includes(temp-5)) ||
+	 (eggValuesY.includes(temp-6))||(eggValuesY.includes(temp-7))||
+	 (eggValuesY.includes(temp-8))||(eggValuesY.includes(temp-9))||(eggValuesY.includes(temp-10)) ||
+	 (eggValuesY.includes(temp+1))||(eggValuesY.includes(temp+2))||
+	 (eggValuesY.includes(temp+3))||(eggValuesY.includes(temp+4))||(eggValuesY.includes(temp+5)) ||
+	 (eggValuesY.includes(temp+6))||(eggValuesY.includes(temp+7))||
+	 (eggValuesY.includes(temp+8))||(eggValuesY.includes(temp+9))||(eggValuesY.includes(temp+10)) ||
+	 (eggValuesY.includes(temp-11))||(eggValuesY.includes(temp-12))||
+	 (eggValuesY.includes(temp-13))||(eggValuesY.includes(temp-14))||(eggValuesY.includes(temp-15)) ||
+	 (eggValuesY.includes(temp-16))||(eggValuesY.includes(temp-17))||
+	 (eggValuesY.includes(temp-18))||(eggValuesY.includes(temp-19))||(eggValuesY.includes(temp-20)) ||
+	 (eggValuesY.includes(temp+11))||(eggValuesY.includes(temp+12))||
+	 (eggValuesY.includes(temp+13))||(eggValuesY.includes(temp+14))||(eggValuesY.includes(temp+15)) ||
+	 (eggValuesY.includes(temp+16))||(eggValuesY.includes(temp+17))||
+	 (eggValuesY.includes(temp+18))||(eggValuesY.includes(temp+19))||(eggValuesY.includes(temp+20))){
+	 eggValuesY.push(temp);
+	 }
+	 else{
+	 flagY= true;
+	 }
+	}
+	else{
+	flagY = false;
+	}
+	}
+	
+	egg_x2 = eggValuesX[2];
+	//window.alert(egg_x2);
+    egg_x1 = eggValuesX[1];
+    egg_x = eggValuesX[0];
+    egg_x3 = eggValuesX[3];
+    egg_x4 = eggValuesX[4];
+    egg_y2 = eggValuesY[2];
+    egg_y1 =eggValuesY[1];
+    egg_y = eggValuesY[0];
+    egg_y3 = eggValuesY[3];
+    egg_y4 = eggValuesY[4];
+   
+    
+}    
+
+
+
+function gameCycle() {
+    
+    if (inGame) {
+
+        checkEgg();
+        checkCollision();
+        move();
+        doDrawing();
+        setTimeout("gameCycle()", DELAY);
+    }
+}
+
+onkeydown = function(e) {
+    
+    var key = e.keyCode;
+    e.preventDefault();
+    
+    if ((key == LEFT_KEY) && (!rightDirection)) {
+        
+        leftDirection = true;
+        upDirection = false;
+        downDirection = false;
+    }
+
+    if ((key == RIGHT_KEY) && (!leftDirection)) {
+        
+        rightDirection = true;
+        upDirection = false;
+        downDirection = false;
+    }
+
+    if ((key == UP_KEY) && (!downDirection)) {
+        
+        upDirection = true;
+        rightDirection = false;
+        leftDirection = false;
+    }
+
+    if ((key == DOWN_KEY) && (!upDirection)) {
+        
+        downDirection = true;
+        rightDirection = false;
+        leftDirection = false;
+    }        
+}; 
+
+function modalCloseButtonClick(){
+  hintBtnClickCount++;
+  if(hintBtnClickCount === 2){
+    document.getElementById('lnkHint').disabled = true;
+    document.getElementById('lnkHint').style.cursor = 'default';
+  }
+}   
+</script>
+</head>
+    
+<body onload="init();">
+<div class="container">
+<center>
+<div class="row">
+ <img class="img-valign" src="https://fontmeme.com/permalink/180501/b769ff32c433d6668827b7d52faedfa1.png" alt="sketchalot-font" border="0"><label id="level">9</label><br>
+ </center> 
+</div>
+<div class="row">
+<div class="col-md-2">
+  <a href="{% url 'start' %}"><img class=" pull-right img-responsive" src="https://fontmeme.com/permalink/180501/daa85d57be61bb50ee16d2f9a7277267.png" alt="sketchalot-font" border="0"></a>
+</div>
+<div class="col-md-2">
+  <a href="{% url 'index' %}"><img class=" pull-right img-responsive" src="https://fontmeme.com/permalink/180501/d4c48eed799d69f909ae590da4578b4c.png" alt="sketchalot-font" border="0"></a>
+  <a style="cursor: pointer;" data-toggle="modal" data-target="#myModal" id="lnkHint"><img src="https://fontmeme.com/permalink/180506/a40fa8101a93fa40324d902ab85da5f0.png" alt="Hint" id="imgHint"></a>
+</div>
+<div class="col-md-4">
+  <center><div class="eggs" id="divEggs">{% block content %} {% for c in content%} <div id='egg'>{{c}}</div>{% endfor %}{% endblock %}</div></center>
+</div>
+<div class="col-md-2">
+   <img class="img-valign" src="https://fontmeme.com/permalink/180501/e58b7eb3ab61180d8a3b82be3e22b314.png" alt="sketchalot-font" border="0"><label id="lblLives"></label>
+</div>
+<div class="col-md-2">
+    <a onclick="lnkNextClick()" class="not-active img-responsive" id="lnknext"><img class="img-valign" src="https://fontmeme.com/permalink/180501/4b736138c347c4e9f31f0f255c9a2e10.png" alt="sketchalot-font" id="new4" border="0"></a>
+</div>
+</div>
+<div class="row">
+<center><canvas id="myCanvas" width="500" height="500"></canvas> </center>
+</div>
+</div>
+</div> 
+
+<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">
+            <img src="https://fontmeme.com/permalink/180506/a40fa8101a93fa40324d902ab85da5f0.png" alt="Hint" id="modalHint"></a>
+          </h4>
+        </div>
+        <div class="modal-body">
+          <p>Cubes</p>
+        </div>
+        <div class="modal-footer">
+         <button onclick="modalCloseButtonClick()" type="button" class="btn btn-default" data-dismiss="modal"><img class="img-valign" src="https://fontmeme.com/permalink/180506/a86d819bc72bbfbc60469a269a2eae76.png" alt="sketchalot-font" id="new4" border="0"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
