@@ -344,13 +344,16 @@ function updateLives(){
 
 function placeEgg() {
  	
+	
+
 	flagX = true;
+	var countX=0;
 	var eggValuesX = [];
 	while(flagX){
-	 var temp = Math.floor((Math.random()*450)+25)
+	 var temp = Math.floor((Math.random()*325)+150)
 	 //window.alert(temp);
 	if(eggValuesX.length<5){
-	 if( !(eggValuesX.includes(temp))||(eggValuesX.includes(temp-1))||(eggValuesX.includes(temp-2))||
+	 if( !((eggValuesX.includes(temp))||(eggValuesX.includes(temp-1))||(eggValuesX.includes(temp-2))||
 	 (eggValuesX.includes(temp-3))||(eggValuesX.includes(temp-4))||(eggValuesX.includes(temp-5)) ||
 	 (eggValuesX.includes(temp-6))||(eggValuesX.includes(temp-7))||
 	 (eggValuesX.includes(temp-8))||(eggValuesX.includes(temp-9))||(eggValuesX.includes(temp-10)) ||
@@ -365,8 +368,17 @@ function placeEgg() {
 	 (eggValuesX.includes(temp+11))||(eggValuesX.includes(temp+12))||
 	 (eggValuesX.includes(temp+13))||(eggValuesX.includes(temp+14))||(eggValuesX.includes(temp+15)) ||
 	 (eggValuesX.includes(temp+16))||(eggValuesX.includes(temp+17))||
-	 (eggValuesX.includes(temp+18))||(eggValuesX.includes(temp+19))||(eggValuesX.includes(temp+20))){
-	 eggValuesX.push(temp);	
+	 (eggValuesX.includes(temp+18))||(eggValuesX.includes(temp+19))||(eggValuesX.includes(temp+20))
+	 ||(eggValuesX.includes(temp-21))||(eggValuesX.includes(temp-22))||
+	 (eggValuesX.includes(temp-23))||(eggValuesX.includes(temp-24))||(eggValuesX.includes(temp-25)) ||
+	 (eggValuesX.includes(temp-26))||(eggValuesX.includes(temp-27))||
+	 (eggValuesX.includes(temp-28))||(eggValuesX.includes(temp-29))||(eggValuesX.includes(temp-30)) ||
+	 (eggValuesX.includes(temp+21))||(eggValuesX.includes(temp+22))||
+	 (eggValuesX.includes(temp+23))||(eggValuesX.includes(temp+24))||(eggValuesX.includes(temp+25)) ||
+	 (eggValuesX.includes(temp+26))||(eggValuesX.includes(temp+27))||
+	 (eggValuesX.includes(temp+28))||(eggValuesX.includes(temp+29))||(eggValuesX.includes(temp+30))
+	 )){
+	 eggValuesX.push(temp);
 	 }
 	 else{
 	 flagX= true;
@@ -380,11 +392,12 @@ function placeEgg() {
 	
 	flagY = true;
 	var eggValuesY = [];
+	var countY=0;
 	while(flagY){
-	 var temp = Math.floor((Math.random()*430)+35)
+	 var temp = Math.floor((Math.random()*315)+150)
 	 //window.alert(temp);
 	if(eggValuesY.length<5){
-	 		 if( !(eggValuesY.includes(temp))||(eggValuesY.includes(temp-1))||(eggValuesY.includes(temp-2))||
+	 		 if( !((eggValuesY.includes(temp))||(eggValuesY.includes(temp-1))||(eggValuesY.includes(temp-2))||
 	 (eggValuesY.includes(temp-3))||(eggValuesY.includes(temp-4))||(eggValuesY.includes(temp-5)) ||
 	 (eggValuesY.includes(temp-6))||(eggValuesY.includes(temp-7))||
 	 (eggValuesY.includes(temp-8))||(eggValuesY.includes(temp-9))||(eggValuesY.includes(temp-10)) ||
@@ -399,8 +412,19 @@ function placeEgg() {
 	 (eggValuesY.includes(temp+11))||(eggValuesY.includes(temp+12))||
 	 (eggValuesY.includes(temp+13))||(eggValuesY.includes(temp+14))||(eggValuesY.includes(temp+15)) ||
 	 (eggValuesY.includes(temp+16))||(eggValuesY.includes(temp+17))||
-	 (eggValuesY.includes(temp+18))||(eggValuesY.includes(temp+19))||(eggValuesY.includes(temp+20))){
-	 eggValuesY.push(temp);
+	 (eggValuesY.includes(temp+18))||(eggValuesY.includes(temp+19))||(eggValuesY.includes(temp+20))
+	 ||(eggValuesY.includes(temp-21))||(eggValuesY.includes(temp-22))||
+	 (eggValuesY.includes(temp-23))||(eggValuesY.includes(temp-24))||(eggValuesY.includes(temp-25)) ||
+	 (eggValuesY.includes(temp-26))||(eggValuesY.includes(temp-27))||
+	 (eggValuesY.includes(temp-28))||(eggValuesY.includes(temp-29))||(eggValuesY.includes(temp-30)) ||
+	 (eggValuesY.includes(temp+21))||(eggValuesY.includes(temp+22))||
+	 (eggValuesY.includes(temp+23))||(eggValuesY.includes(temp+24))||(eggValuesY.includes(temp+25)) ||
+	 (eggValuesY.includes(temp+26))||(eggValuesY.includes(temp+27))||
+	 (eggValuesY.includes(temp+28))||(eggValuesY.includes(temp+29))||(eggValuesY.includes(temp+30))
+	 
+	 
+	 )){
+	  eggValuesY.push(temp);
 	 }
 	 else{
 	 flagY= true;
@@ -412,7 +436,8 @@ function placeEgg() {
 	}
 	
 	egg_x2 = eggValuesX[2];
-	//window.alert(egg_x2);
+	
+	
     egg_x1 = eggValuesX[1];
     egg_x = eggValuesX[0];
     egg_x3 = eggValuesX[3];
@@ -422,7 +447,9 @@ function placeEgg() {
     egg_y = eggValuesY[0];
     egg_y3 = eggValuesY[3];
     egg_y4 = eggValuesY[4];
-    
+	//window.alert(egg_x5);
+	
+
 }    
 
 
